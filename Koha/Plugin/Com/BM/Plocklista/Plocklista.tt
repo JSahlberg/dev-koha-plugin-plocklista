@@ -1,0 +1,141 @@
+[% USE raw %]
+[% USE Asset %]
+[% USE Koha %]
+[% USE KohaDates %]
+[% USE ItemTypes %]
+[% USE Branches %]
+[% USE AuthorisedValues %]
+[% USE TablesSettings %]
+[% PROCESS 'i18n.inc' %]
+[% SET footerjs = 1 %]
+[% INCLUDE 'doc-head-open.inc' %]
+<title>[% FILTER collapse %]
+    [% t("Holds queue") | html %] &rsaquo;
+    [% t("Circulation") | html %] &rsaquo;
+    [% t("Koha") | html %]
+[% END %]</title>
+[% INCLUDE 'doc-head-close.inc' %]
+<style> p { margin-top: 0; }</style>
+</head>
+
+<body id="plocklista" class="circ">
+        
+<div class="main container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+            <main>
+                <div class="row">
+
+                [% IF ( total || Koha.Preference('CircSidebar') ) %]
+                    <div class="col-sm-12">
+                [% ELSE %]
+                    <div class="col-md-10 col-md-offset-1 col-lg-8 col-lg-offset-2">
+                [% END %]
+
+<h1>Plocklista</h1>
+
+[% IF ( run_report ) %]
+    [% IF ( total ) %]
+        <div class="results">[% total | html %] <span>exemplar hittade för </span>
+            [% IF ( branchlimit ) %][% Branches.GetName( branchlimit ) | html %][% ELSE %]<span>Alla bibliotek</span>[% END %]
+            [% IF ( itemtypeslimit ) %] <span>och exemplartyp: [% ItemTypes.GetDescription( itemtypeslimit ) | html %]</span>[% END %]
+            [% IF ( ccodeslimit ) %] <span>och samling: [% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.ccode' authorised_value = ccodeslimit ) | html %]</span>[% END %]
+            [% IF ( locationslimit ) %] <span>och placering: [% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.location' authorised_value = locationslimit ) | html %]</span>[% END %]
+        </div>
+    [% ELSE %]
+        <div class="alert alert-info">Inga exemplar hittade.</div>
+    [% END %]
+    [% IF ( itemsloop ) %]
+
+            <table id="holdst">
+                                
+                <tbody>[% FOREACH itemsloo IN itemsloop %]
+                    <tr>
+                        <td class="hq-title" style="padding:30px 10px;">
+                            
+                            <div class="hq-notes"><img class="coverIMG" id="[% IF ( itemsloo.biblio.isbn ) %][% itemsloo.biblio.isbn | html %][% END %]" style="float:left;max-height:120px;max-width:100px;margin-left:0px;margin-right:10px;" ></div>
+                            <p>
+                                [% INCLUDE 'biblio-title.inc' biblio=itemsloo.biblio link = 1 %]
+                            </p>
+                            <p>
+                                <div class="hq-biblionumber content_hidden">[% itemsloo.biblionumber | html %]</div>
+                                <div class="hq-author">[% itemsloo.biblio.author | html %]</div>
+                                [% IF ( itemsloo.biblio.biblioitem.editionstatement ) %]<div class="hq-editionstatement">[% itemsloo.biblio.biblioitem.editionstatement | html %]</div>[% END %]
+                                <div class="hq-pubdata">
+                                    [% IF ( itemsloo.biblio.biblioitem.publishercode ) %][% itemsloo.biblio.biblioitem.publishercode | html %][% END %]
+
+                                    [% IF ( itemsloo.biblio.biblioitem.publicationyear ) %]
+                                        , [% itemsloo.biblio.biblioitem.publicationyear | html %]
+                                    [% ELSIF ( itemsloo.biblio.copyrightdate ) %]
+                                        , [% itemsloo.biblio.copyrightdate | html %]
+                                    [% END %]
+
+                                    [% IF ( itemsloo.biblio.biblioitem.pages ) %]: [% itemsloo.biblio.biblioitem.pages | html %] [% END %]
+
+                                    [% IF ( itemsloo.biblio.biblioitem.size ) %][% itemsloo.biblio.biblioitem.size | html %][% END %]
+
+                                    [% IF ( itemsloo.isbn ) %]<span>ISBN: [% itemsloo.isbn | html %]</span>[% END %]
+                                </div>
+                                <hr>
+                                <div class="hq-itemtype">[% ItemTypes.GetDescription( itemsloo.item.effective_itemtype ) | html %]</div>
+                                <div class="hq-collection">[% AuthorisedValues.GetDescriptionByKohaField(kohafield => 'items.ccode', authorised_value => itemsloo.item.ccode ) | html%] - [% IF ( itemsloo.location ) %]<em>[% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.location', authorised_value => itemsloo.location ) | html %]</em> [% END %]</div>
+                                <div class="hq-callnumber">[% itemsloo.item.itemcallnumber | html %]</div>
+                                <div class="hq-barcode">
+                                    [% IF ( itemsloo.item_level_request ) %]
+                                        <em>Endast exemplar:</em> <strong>[% itemsloo.barcode | html %]</strong>
+                                    [% ELSE %]
+                                        <strong>[% itemsloo.barcode | html %]</strong> <em>eller alla tillgängliga</em>
+                                    [% END %]
+                                </td>
+                            </p>
+                        </td>
+                    </tr>
+                [% END %]
+                </tbody>
+            </table>
+
+    [% END %]
+    [% END %]
+
+                        
+
+                    </div> <!-- /.col-sm-10.col-sm-push-2 -->
+                            
+                </div> <!-- /.row -->
+
+            </main>
+        </div> <!-- /.col-sm-12 -->
+    </div> <!-- /.row -->
+
+[% MACRO jsinclude BLOCK %]
+    [% INCLUDE 'datatables.inc' %]
+    [% INCLUDE 'columns_settings.inc' %]
+    <script>
+        $(document).ready(function() {
+            var holdst;
+
+            // Setup filters before DataTables initialisation, in case some columns are
+            // hidden by default
+            var filterColumnTimeoutId;
+            var filterColumn = function(e) {
+                clearTimeout(filterColumnTimeoutId);
+                filterColumnTimeoutId = setTimeout(function() {
+                    var input = $(e.target);
+                    var idx = input.parents('td').index();
+                    holdst.api().column(idx + ':visible').search(input.val()).draw();
+                }, 200);
+            };
+            $('#holdst thead input').on('change keyup keydown', filterColumn);
+
+            var table_settings = [% TablesSettings.GetTableSettings('circ', 'view_holdsqueue', 'holds-table', 'json') | $raw %];
+            var holdst = KohaTable("holdst", {
+                "dom": 'B<"clearfix">t',
+                "orderCellsTop":  true,
+                "paginate": false
+            }, table_settings);
+
+        });
+    </script>
+[% END %]
+
+[% INCLUDE 'intranet-bottom.inc' %]
