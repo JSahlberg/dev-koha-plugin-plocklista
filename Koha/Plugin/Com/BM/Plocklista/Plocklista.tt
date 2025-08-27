@@ -48,6 +48,11 @@
     [% IF ( itemsloop ) %]
 
             <table id="holdst">
+                <thead>
+                    <tr>
+                        <th>Plocklista</th>
+                    </tr>
+                </thead>
                                 
                 <tbody>[% FOREACH itemsloo IN itemsloop %]
                     <tr>
@@ -116,6 +121,7 @@
 
             // Setup filters before DataTables initialisation, in case some columns are
             // hidden by default
+            /*
             var filterColumnTimeoutId;
             var filterColumn = function(e) {
                 clearTimeout(filterColumnTimeoutId);
@@ -126,7 +132,8 @@
                 }, 200);
             };
             $('#holdst thead input').on('change keyup keydown', filterColumn);
-
+            */
+            
             var table_settings = [% TablesSettings.GetTableSettings('circ', 'view_holdsqueue', 'holds-table', 'json') | $raw %];
             var holdst = KohaTable("holdst", {
                 "dom": 'B<"clearfix">t',

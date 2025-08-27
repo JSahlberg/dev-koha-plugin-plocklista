@@ -238,14 +238,14 @@ sub getPlocklista {
     my $run_report     = $params->{'run_report'};
     my $branchlimit    = $params->{'branchlimit'};
     my $itemtypeslimit = $params->{'itemtypeslimit'};
-    my $ccodeslimit = $params->{'ccodeslimit'};
+    my $ccodeslimit    = $params->{'ccodeslimit'};
     my $locationslimit = $params->{'locationslimit'};
 
     if ( $run_report ) {
         my $items = GetHoldsQueueItems({
-            branchlimit => $branchlimit,
+            branchlimit    => $branchlimit,
             itemtypeslimit => $itemtypeslimit,
-            ccodeslimit => $ccodeslimit,
+            ccodeslimit    => $ccodeslimit,
             locationslimit => $locationslimit
         });
         
