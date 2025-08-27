@@ -258,7 +258,7 @@ sub getPlocklista {
             itemtypeslimit  => $itemtypeslimit,
             ccodeslimit     => $ccodeslimit,
             locationslimit  => $locationslimit,
-            total           => $items->count; # scalar @$items,
+            total           => $items->count, # scalar @$items,
             itemsloop       => $items,
             run_report      => $run_report,
         );
