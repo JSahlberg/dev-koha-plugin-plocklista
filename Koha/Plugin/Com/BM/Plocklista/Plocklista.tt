@@ -78,7 +78,7 @@
                                 </div>
                                 <hr>
                                 <div class="hq-itemtype">[% ItemTypes.GetDescription( itemsloo.item.effective_itemtype ) | html %]</div>
-                                <div class="hq-collection">[% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.ccode', authorised_value => itemsloo.item.ccode ) | html %] - [% IF ( itemsloo.location ) %]<em>[% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.location', authorised_value => itemsloo.item.location ) | html %]</em> [% END %]</div>
+                                <div class="hq-collection">[% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.ccode', authorised_value => itemsloo.item.ccode ) | html %] - [% IF ( itemsloo.item.location ) %]<em>[% AuthorisedValues.GetDescriptionByKohaField( kohafield => 'items.location', authorised_value => itemsloo.item.location ) | html %]</em> [% END %]</div>
                                 <div class="hq-callnumber">[% itemsloo.item.itemcallnumber | html %]</div>
                                 <div class="hq-barcode">
                                     [% IF ( itemsloo.item_level_request ) %]
