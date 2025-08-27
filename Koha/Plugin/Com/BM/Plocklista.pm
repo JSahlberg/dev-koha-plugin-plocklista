@@ -17,7 +17,7 @@ use utf8;
 
 use warnings;
 
-our $VERSION = "1.32";
+our $VERSION = "1.33";
 
 
 our $metadata = {
@@ -25,7 +25,7 @@ our $metadata = {
     author          => 'Johan Sahlberg',
     date_authored   => '2023-08-08',
     date_updated    => "2025-08-27",
-    minimum_version => 22.05,
+    minimum_version => 24.11,
     maximum_version => '',
     version         => $VERSION,
     description     => 'Förenklad plocklista för användning på mobila enheter'
