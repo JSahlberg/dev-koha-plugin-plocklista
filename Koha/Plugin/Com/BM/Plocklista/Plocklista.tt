@@ -53,7 +53,7 @@
                     <tr>
                         <td class="hq-title" style="padding:30px 10px;">
                             
-                            <div class="hq-notes"><img class="coverIMG" id="[% IF ( itemsloo.biblio.isbn ) %][% itemsloo.biblio.isbn | html %][% END %]" style="float:left;max-height:120px;max-width:100px;margin-left:0px;margin-right:10px;" ></div>
+                            <div class="hq-notes"><img class="coverIMG" id="[% IF ( itemsloo.biblio.biblioitem.isbn ) %][% itemsloo.biblio.biblioitem.isbn | html %][% END %]" style="float:left;max-height:120px;max-width:100px;margin-left:0px;margin-right:10px;" ></div>
                             <p>
                                 [% INCLUDE 'biblio-title.inc' biblio=itemsloo.biblio link = 1 %]
                             </p>
@@ -74,7 +74,7 @@
 
                                     [% IF ( itemsloo.biblio.biblioitem.size ) %][% itemsloo.biblio.biblioitem.size | html %][% END %]
 
-                                    [% IF ( itemsloo.isbn ) %]<span>ISBN: [% itemsloo.isbn | html %]</span>[% END %]
+                                    [% IF ( itemsloo.biblio.biblioitem.isbn ) %]<span>ISBN: [% itemsloo.biblio.biblioitem.isbn | html %]</span>[% END %]
                                 </div>
                                 <hr>
                                 <div class="hq-itemtype">[% ItemTypes.GetDescription( itemsloo.item.effective_itemtype ) | html %]</div>
